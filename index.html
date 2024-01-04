@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Image to Base64 Demo</title>
+</head>
+
+<body>
+    <h1 style="text-align: center;">Image to Base64</h1>
+
+    <div style="display: flex; align-items: center; justify-content: center; flex-direction: column;">
+
+        <form id="image-form" style="display: flex; flex-direction: column; align-items: center; width: 200px;">
+            <input type="file" id="image-input">
+        </form>
+
+        <div style="flex-grow: 1; max-width: 200px; display: flex; justify-content: center;">
+            <button id="download" style="margin-top: 30px;">download</button>
+        </div>
+
+    </div>
+
+  <script type="module">
+    import config from './config.js';
+    
+    // 定义后端服务地址
+    const apiUrl = config.backendURL;
+    const form = document.getElementById('image-form');
+    const fileInput = document.getElementById('image-input');
+    const resultDiv = document.getElementById('result');
+    const downloadBtn = document.getElementById('download');
+
+    //form.addEventListener('submit', async event => {
+    //    event.preventDefault();
+
+    //    const image = fileInput.files[0];
+    //    const formData = new FormData();
+    //    formData.append('image', image);
+
+    //    const response = await fetch(apiUrl + '/image_to_base64', {
+    //        method: 'POST', 
+    //        body: formData  
+    //    });
+    //    const data = await response.json();
+
+    //    resultDiv.innerText = data.base64;
+    //});
+
+    downloadBtn.addEventListener('click', async() => {
+        const image = fileInput.files[0];
+        const formData = new FormData();
+        formData.append('image', image);
+
+        const response = await fetch(apiUrl + '/image_to_base64', {
+            method: 'POST',
+            body: formData
+        });
+        const data = await response.json();
+
+        const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify({
+            image: data.base64
+        }))}`;
+        const dlAnchorElem = document.createElement('a');
+        dlAnchorElem.setAttribute("href", dataStr);
+        dlAnchorElem.setAttribute("download", "image.json");
+        dlAnchorElem.click();
+    });
+  </script>
+
+</body>
+</html>

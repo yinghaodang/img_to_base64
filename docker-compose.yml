@@ -1,0 +1,26 @@
+version: '3'
+
+networks:
+   img_to_base64_net:
+     external: true
+
+services:
+  frontend:
+    image: nginx:1.24.0
+    volumes:
+      - ./config.js:/usr/src/config.js
+      - ./index.html:/usr/src/index.html
+      - ./nginxdev.conf:/etc/nginx/conf.d/nginxdev.conf
+    restart: unless-stopped  # 配置容器自动重启
+    ports:
+      - "33334:9001"
+    networks:
+      - img_to_base64_net
+  
+  backend:
+    image: img_to_base64:latest
+    restart: unless-stopped  # 配置容器自动重启
+    ports:
+      - "33333:5000"
+    networks:
+      - img_to_base64_net
